@@ -209,26 +209,74 @@ document.addEventListener("mousemove",(e)=>{
     glow.style.top=e.pageY-12+"px";
 });
 
-// Open about:blank embed
+// UPDATED FUNCTION ONLY (as requested)
 function openBlank(){
     let url=document.getElementById("urlInput").value.trim();
     if(!url) return;
-
     if(!url.startsWith("http")) url="https://"+url;
 
-    const w=window.open("about:blank","_self");
+    const w = window.open("about:blank", "_blank");
+
     w.document.write(`
         <html>
         <head>
             <title>Google Classroom</title>
             <link rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png">
             <style>
-                html,body{margin:0;height:100%;background:black;}
-                iframe{border:none;width:100%;height:100%;}
+                html,body{
+                    margin:0;
+                    height:100%;
+                    background:black;
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    overflow:hidden;
+                    font-family:Arial, sans-serif;
+                }
+                .loader{
+                    text-align:center;
+                    color:white;
+                }
+                .spinner{
+                    width:70px;
+                    height:70px;
+                    border:6px solid rgba(255,255,255,0.2);
+                    border-top:6px solid #00f5ff;
+                    border-radius:50%;
+                    animation:spin 1s linear infinite;
+                    margin:auto;
+                    margin-bottom:20px;
+                }
+                @keyframes spin{
+                    0%{transform:rotate(0deg);}
+                    100%{transform:rotate(360deg);}
+                }
+                iframe{
+                    position:absolute;
+                    top:0;
+                    left:0;
+                    width:100%;
+                    height:100%;
+                    border:none;
+                    display:none;
+                }
             </style>
         </head>
         <body>
-            <iframe src="${url}" allowfullscreen></iframe>
+            <div class="loader">
+                <div class="spinner"></div>
+                <div>Loading...</div>
+            </div>
+
+            <iframe id="siteFrame" src="${url}"></iframe>
+
+            <script>
+                const frame = document.getElementById("siteFrame");
+                frame.onload = function(){
+                    document.querySelector(".loader").style.display="none";
+                    frame.style.display="block";
+                };
+            <\/script>
         </body>
         </html>
     `);
